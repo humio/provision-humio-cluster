@@ -7,5 +7,5 @@ set -x
 DIR=`dirname $0`
 cd $DIR
 
-./copy.sh
+./scripts/copy.sh
 ssh $SSH_CONNECT 'sudo setup-humio/bootstrap-machine.sh'

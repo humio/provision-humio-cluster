@@ -8,5 +8,5 @@ set -x
 DIR=`dirname $0`
 cd $DIR
 
-./copy.sh
+./scripts/copy.sh
 ssh $SSH_CONNECT "setup-humio/setup-cluster-member.sh $HOSTNAME"

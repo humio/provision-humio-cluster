@@ -7,5 +7,5 @@ set -x
 DIR=`dirname $0`
 cd $DIR
 
-./copy.sh
+./scripts/copy.sh
 ssh -t $SSH_CONNECT 'sudo su -c ./setup-humio/update.sh humio'
