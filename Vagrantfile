@@ -2,19 +2,24 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "debian/jessie64"
+  (1..3).each do |i|
+    config.vm.define "humio#{i}" do |humio|
+      humio.vm.box = "debian/jessie64"
 
-  config.vm.network "private_network", ip: "10.0.0.2"
+      humio.vm.network "private_network", ip: "10.0.0.#{i+1}"
 
-  config.vm.synced_folder ".", "/vagran", type: "nfs"
+      humio.vm.synced_folder ".", "/vagran", type: "nfs"
 
-  config.vm.provider "virtualbox" do |vb|
-    # Display the VirtualBox GUI when booting the machine
-    vb.gui = false
+      humio.vm.provider "virtualbox" do |vb|
+        # Display the VirtualBox GUI when booting the machine
+        vb.gui = false
 
-    # Customize the amount of memory on the VM:
-    vb.memory = "2048"
+        # Customize the amount of memory on the VM:
+        vb.memory = "2048"
+      end
+    end
   end
+
 
   # View the documentation for the provider you are using for more
   # information on available options.

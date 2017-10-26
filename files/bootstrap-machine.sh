@@ -51,12 +51,13 @@ fi
 if [ ! -f "/usr/bin/docker" ]; then
     curl -fsSL https://get.docker.com/ | sh  ##this could be dangerous
     # add humio user to docker group
-    usermod -aG docker humio 
+    usermod -aG docker humio
     service docker restart
 fi
 
 # create humio directories
 mkdir -p /data/logs
+mkdir -p /data/logs/kafka
 chown -R humio:humio /data/logs
 mkdir -p /data/zookeeper-data
 chown -R humio:humio /data/zookeeper-data
