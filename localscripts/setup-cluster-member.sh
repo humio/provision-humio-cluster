@@ -5,17 +5,14 @@ set -x
 DIR=`dirname $0`
 cd $DIR
 
-HOSTNAME=$1
+source config.conf
+: "${USER:?Specify the USER running humio in config.conf}"
 
-python setup-cluster-member.py $HOSTNAME
+IP=$1
 
-sudo cp output/humio-config.env output/*.properties /home/humio/
-sudo chown -R humio /home/humio/
+python setup-cluster-member.py $IP
+
+sudo cp output/humio-config.env output/*.properties /home/$USER/
+sudo chown -R "$USER" /home/$USER/
 sudo cp output/zookeeper-myid /data/zookeeper-data/myid
-sudo chown -R humio /data/zookeeper-data
-#add hosts to /etc/hosts
-
-LEAD='^### humio-section$'
-TAIL='^### humio-section-end$'
-sudo sed -i "/$LEAD/,/$TAIL/d" /etc/hosts
-cat output/hosts | sudo tee -a /etc/hosts
+sudo chown -R "$USER" /data/zookeeper-data

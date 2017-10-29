@@ -2,12 +2,22 @@
 set -e
 set -x
 
+DIR=`dirname $0`
+cd $DIR
+
+source config.conf
+: "${USER:?Specify the USER running humio in config.conf}"
+
+if [ ! -d "bootstrap-machine-specific.sh" ]; then
+  ./bootstrap-machine-specific.sh
+fi
+
 cat << EOF | tee /etc/security/limits.d/99-humio-limits.conf
 # Added by humio provisioning script: Raise limits for files.
 * soft nofile 250000
 * hard nofile 250000
-humio soft nofile 250000
-humio hard nofile 250000
+${USER} soft nofile 250000
+${USER} hard nofile 250000
 root soft nofile 250000
 root hard nofile 250000
 EOF
@@ -18,48 +28,32 @@ session required pam_limits.so
 EOF
 
 
-export DEBIAN_FRONTEND=noninteractive
-apt-get update
-# Upgrade as much as possible.
-apt-get -yq dist-upgrade
-apt-get -yq autoremove
-apt-get -yq install curl nano emacs-nox unattended-upgrades lsof jq smartmontools htop dstat
-
-timedatectl  set-timezone UTC
-service rsyslog restart
-
 # Disable IPv6 for the time being.
-cat << EOF | tee /etc/sysctl.d/99-humio-no-ipv6.conf
-# Disable IPv6 for now....
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1
-# Allow larger backlog of connections:
+cat << EOF | tee /etc/sysctl.d/99-humio.conf
 net.core.somaxconn=4096
 net.ipv4.tcp_max_syn_backlog=4096
-
 EOF
 
 sudo service procps reload
 sysctl -p
 
-if [ ! -d "/home/humio" ]; then
-    adduser --home /home/humio --gecos 'Humio' --disabled-password --disabled-login --shell /bin/bash humio
+if [ ! -d "/home/$USER" ]; then
+    adduser --home "/home/$USER" --gecos "$USER" --disabled-password --disabled-login --shell /bin/bash "$USER"
 fi
 
 # install docker
 if [ ! -f "/usr/bin/docker" ]; then
     curl -fsSL https://get.docker.com/ | sh  ##this could be dangerous
     # add humio user to docker group
-    usermod -aG docker humio
+    usermod -aG docker $USER
     service docker restart
 fi
 
 # create humio directories
 mkdir -p /data/logs
 mkdir -p /data/logs/kafka
-chown -R humio:humio /data/logs
+chown -R $USER /data/logs
 mkdir -p /data/zookeeper-data
-chown -R humio:humio /data/zookeeper-data
+chown -R $USER /data/zookeeper-data
 
 apt-get clean

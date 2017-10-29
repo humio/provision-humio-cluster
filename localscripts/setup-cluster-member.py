@@ -6,18 +6,16 @@ import re
 
 configs = dict(line.strip().split('=') for line in open('config.conf'))
 
-ipStrings = configs["ips"].split(',')
-nameStrings = configs["names"].split(',')
+ipStrings = configs["IPS"].split(',')
 ips = map(lambda str: str.strip(), ipStrings)
-names = map(lambda str: str.strip(), nameStrings)
 
 args = sys.argv
 if len(args) != 2:
-    raise Exception('script requires the name of the host as parameter')
+    raise Exception('script requires the ip-address of the host as parameter')
 
-currentName = args[1]
-if currentName not in names:
-    raise Exception('supplied parameter ' + currentName + ' was not a name in the supplied config file. ' + str(names))
+ip = args[1]
+if ip not in ips:
+    raise Exception('supplied parameter ' + ip + ' was not an ip in the supplied config file. ' + str(ips))
 
 
 def createFromTemplate( template, dictionary ):
@@ -35,55 +33,43 @@ def createFromTemplate( template, dictionary ):
 
     return;
 
-def findID( currentName, names ):
-    myIDMatch = re.search('(\d+)$', currentName)
-    myID = myIDMatch.group() if myIDMatch else str(names.index(currentName) + 1)
-    return myID
+def findID( ip, ips ):
+    return str(ips.index(ip) + 1)
 
-def createZookeeperProperties( currentName, names ):
-    zookeeperServers = ['server.' + str(index +1) + '=' + name + ':2888:3888' for index,name in enumerate(names)]
-    mapping = {'<servers>':('\n'.join(zookeeperServers)), '<name>':currentName}
+def createZookeeperProperties( ip, ips ):
+    zookeeperServers = ['server.' + str(index +1) + '=' + serverIp + ':2888:3888' for index,serverIp in enumerate(ips)]
+    mapping = {'<servers>':('\n'.join(zookeeperServers)), '<ip>':ip}
     createFromTemplate('zookeeper.properties', mapping)
     return;
 
-def createZookeeperMyID( currentName, names ):
-    myID = findID(currentName, names)
+def createZookeeperMyID( ip, ips ):
+    myID = findID(ip, ips)
     mapping = {'<myID>':myID}
     createFromTemplate('zookeeper-myid', mapping)
     return;
 
-def createKafkaProperties( currentName, names ):
-    brokerIDMatch = re.search('(\d+)$', currentName)
-    brokerID = brokerIDMatch.group() if brokerIDMatch else str(names.index(currentName) + 1)
-    listeners = 'PLAINTEXT://'+ currentName + ':9092'
-    zookeeperConnect = ','.join(map(lambda name: name + ':2181', names))
+def createKafkaProperties( ip, ips ):
+    brokerID = findID(ip, ips)
+    listeners = 'PLAINTEXT://'+ ip + ':9092'
+    zookeeperConnect = ','.join(map(lambda ip: ip + ':2181', ips))
     mapping = {
         '<brokerID>':brokerID,
-        '<name>':currentName,
         '<listeners>': listeners,
         '<zookeeperConnect>': zookeeperConnect}
     createFromTemplate('kafka.properties', mapping)
     return;
 
-def createHumioConfigEnv( currentName, names ):
-    hostIDMatch = re.search('(\d+)$', currentName)
-    hostID = hostIDMatch.group() if hostIDMatch else str(names.index(currentName) + 1)
-    url = 'http://' + currentName + ':8080'
-    kafkaServers = ','.join(map(lambda name: name + ':9092', names))
-    zookeeperUrls = ','.join(map(lambda name: name + ':2181', names))
+def createHumioConfigEnv( ip, ips ):
+    hostID = findID(ip, ips)
+    url = 'http://' + ip + ':8080'
+    kafkaServers = ','.join(map(lambda ip: ip + ':9092', ips))
+    zookeeperUrls = ','.join(map(lambda ip: ip + ':2181', ips))
 
     mapping = {'<hostID>':hostID, '<url>':url, '<kafkaServers>':kafkaServers, '<zookeeperUrls>':zookeeperUrls}
     createFromTemplate('humio-config.env', mapping)
     return;
 
-def createHostsFileAdditions( ips, names ):
-    entries = [ip + '\t\t' + name for ip, name in zip(ips, names)]
-    mapping = {'<entries>':'\n'.join(entries)}
-    createFromTemplate('hosts', mapping)
-    return;
-
-createZookeeperProperties(currentName, names)
-createHumioConfigEnv(currentName, names)
-createKafkaProperties(currentName, names)
-createZookeeperMyID(currentName, names)
-createHostsFileAdditions(ips, names)
+createZookeeperProperties(ip, ips)
+createHumioConfigEnv(ip, ips)
+createKafkaProperties(ip, ips)
+createZookeeperMyID(ip, ips)
