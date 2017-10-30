@@ -50,10 +50,10 @@ if [ ! -f "/usr/bin/docker" ]; then
 fi
 
 # create humio directories
-mkdir -p /data/logs
 mkdir -p /data/logs/kafka
-chown -R $USER /data/logs
 mkdir -p /data/zookeeper-data
-chown -R $USER /data/zookeeper-data
+mkdir -p /data/kafka-data
+mkdir -p /data/humio-data
+chown -R $USER /data/*
 
 apt-get clean
