@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
 
       humio.vm.network "private_network", ip: "10.0.0.#{i+1}"
 
-      humio.vm.synced_folder ".", "/vagran", type: "nfs"
+      humio.vm.synced_folder ".", "/vagrant", type: "nfs"
 
       humio.vm.provider "virtualbox" do |vb|
         # Display the VirtualBox GUI when booting the machine
@@ -17,6 +17,8 @@ Vagrant.configure("2") do |config|
         # Customize the amount of memory on the VM:
         vb.memory = "2048"
       end
+
+
     end
   end
 
@@ -30,8 +32,11 @@ Vagrant.configure("2") do |config|
 
   #config.vm.provision "shell", path: "bootstrap-machine.sh"
 
-  config.vm.provision "shell", inline: <<-SHELL
-     SSHKEY="ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAw2No8R9/j3JfZDLASjlqJoPV108yKlwmEGuAkAYTFXGiV0jQm5moNIjIVQIojER0QGLjFo2q3RbzOoRStGsR0AJIdEo/6P/cM1v0oBx1c7A82FfMOvsxR60jX2g3G3oDmpuZ/h+JZE6mAyfXLvvgHFLhB1AKL2e2DIxsRU0KsDPtKh7BnR7JvmyN2pUaQ/DoMtnhMGDz2WUOkipfZHL+9ikDJdkeyHtr7YGUwCK96fQxEqJtMdHRt2xZI/qnLcOqlpYixeEbd0Vw2pLN0R3n4RHpkbGqg1XBPBIphNE6sDwaEBdCDli6E+3Ar0Yq2le6na3T/nJYPmEdWro39ifklw== chvitved@gmail.com"
-     echo "$SSHKEY" >> /home/vagrant/.ssh/authorized_keys
-   SHELL
+  config.vm.provision "shell" do |s|
+    #Add public key to support standard ssh with your user
+    ssh_pub_key = File.readlines("#{Dir.home}/.ssh/id_rsa.pub").first.strip
+    s.inline = <<-SHELL
+      echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
+    SHELL
+  end
 end

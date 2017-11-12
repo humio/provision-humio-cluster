@@ -5,22 +5,27 @@ set -x
 DIR=`dirname $0`
 cd $DIR
 
-USER=vagrant
-SSH_CONNECT1=$USER@10.0.0.2
-SSH_CONNECT2=$USER@10.0.0.3
-SSH_CONNECT3=$USER@10.0.0.4
+source ./config.conf
+: "${SSH_CONNECTS:?Specify a SSH_CONNECTS string in config.conf with all the servers you need to connect to}"
+: "${IPS:?Specify an IPS string in config.conf. This is the ip that each server will use as its bind address for humio}"
 
-SSH_CONNECT="$SSH_CONNECT1" ./provision.sh
-SSH_CONNECT="$SSH_CONNECT2" ./provision.sh
-SSH_CONNECT="$SSH_CONNECT3" ./provision.sh
+IFS=', ' read -r -a ssh_connects <<< "$SSH_CONNECTS"
+IFS=', ' read -r -a ips <<< "$IPS"
 
-SSH_CONNECT="$SSH_CONNECT1" IP=10.0.0.2 ./setup-cluster-member.sh
-SSH_CONNECT="$SSH_CONNECT2" IP=10.0.0.3 ./setup-cluster-member.sh
-SSH_CONNECT="$SSH_CONNECT3" IP=10.0.0.4 ./setup-cluster-member.sh
+if [ "${#ssh_connects[@]}" != "${#ips[@]}" ]; then
+  echo "SSH_CONNECTS and IPS parameters must have the same number of hosts. SSH_CONNECTS=$SSH_CONNECTS IPS=$IPS"
+  exit 1
+fi
 
-SSH_CONNECT="$SSH_CONNECT1" ./update.sh
-SSH_CONNECT="$SSH_CONNECT2" ./update.sh
-SSH_CONNECT="$SSH_CONNECT3" ./update.sh
+index=0
+while [ $index -lt  ${#ssh_connects[@]} ]
+do
+  SSH_CONNECT="${ssh_connects[index]}" ./provision.sh
+  SSH_CONNECT="${ssh_connects[index]}" IP=${ips[index]} ./setup-cluster-member.sh
+  SSH_CONNECT="${ssh_connects[index]}" ./update.sh
+  ((index++))
+done
 
 sleep 10
-ssh "$SSH_CONNECT1" 'setup-humio/configure-humio.sh'
+SSH_CONNECT="${ssh_connects[0]}" ./scripts/copy.sh
+ssh "${ssh_connects[0]}" "setup-humio/configure-humio.sh ${ips[0]}"

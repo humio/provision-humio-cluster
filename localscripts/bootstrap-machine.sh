@@ -7,6 +7,9 @@ cd $DIR
 
 source config.conf
 : "${USER:?Specify the USER running humio in config.conf}"
+if [ -z "${CPUS}" ]; then
+    CPUS=1
+fi
 
 if [ ! -d "bootstrap-machine-specific.sh" ]; then
   ./bootstrap-machine-specific.sh
@@ -53,7 +56,16 @@ fi
 mkdir -p /data/logs/kafka
 mkdir -p /data/zookeeper-data
 mkdir -p /data/kafka-data
-mkdir -p /data/humio-data
+
+
+index=1
+while [ $index -le $CPUS ]
+do
+  mkdir -p "/data/humio-data${index}"
+  mkdir -p "/data/logs/humio${index}"
+  ((index++))
+done
+
 chown -R $USER /data/*
 
 apt-get clean

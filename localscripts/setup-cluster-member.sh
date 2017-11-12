@@ -12,7 +12,7 @@ IP=$1
 
 python setup-cluster-member.py $IP
 
-sudo cp output/humio-config.env output/*.properties /home/$USER/
+sudo cp output/humio-config*.env output/*.properties /home/$USER/
 sudo chown -R "$USER" /home/$USER/
 sudo cp output/zookeeper-myid /data/zookeeper-data/myid
 sudo chown -R "$USER" /data/zookeeper-data
