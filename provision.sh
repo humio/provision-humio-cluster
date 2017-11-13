@@ -2,10 +2,14 @@
 set -e
 set -x
 
-: "${SSH_CONNECT:?Specify the  ssh username@host using env param SSH_CONNECT}"
-
 DIR=`dirname $0`
 cd $DIR
 
-./scripts/copy.sh
-ssh $SSH_CONNECT 'sudo setup-humio/bootstrap-machine.sh'
+source ./setup.sh
+
+index=0
+while [ $index -lt  ${#ssh_connects[@]} ]
+do
+  ssh "${ssh_connects[index]}" 'sudo setup-humio/bootstrap-machine.sh'
+  ((index++))
+done

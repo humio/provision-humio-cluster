@@ -2,12 +2,16 @@
 set -e
 set -x
 
-source config.conf
-: "${USER:?Specify the USER running humio in config.conf}"
-: "${SSH_CONNECT:?Specify the  ssh username@host using env param SSH_CONNECT}"
-
 DIR=`dirname $0`
 cd $DIR
 
-./scripts/copy.sh
-ssh -t $SSH_CONNECT "sudo su -c ./setup-humio/update.sh $USER"
+source ./setup.sh
+
+: "${USER:?Specify a USER in config.conf. This is the user running on the host machines that will be running Humio}"
+
+index=0
+while [ $index -lt  ${#ssh_connects[@]} ]
+do
+  ssh -t "${ssh_connects[index]}" "sudo su -c ./setup-humio/update.sh $USER"
+  ((index++))
+done
