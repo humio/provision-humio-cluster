@@ -11,7 +11,7 @@ if [ -z "${CPUS}" ]; then
     CPUS=1
 fi
 
-if [ ! -d "bootstrap-machine-specific.sh" ]; then
+if [ -f "bootstrap-machine-specific.sh" ]; then
   ./bootstrap-machine-specific.sh
 fi
 
