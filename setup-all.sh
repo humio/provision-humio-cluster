@@ -8,6 +8,7 @@ cd $DIR
 ./provision.sh
 ./setup-cluster-member.sh
 ./update.sh
+./nginx-start.sh
 
 sleep 10
 ./configure-running-humio.sh

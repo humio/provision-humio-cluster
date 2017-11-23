@@ -78,7 +78,15 @@ def createHumioConfigEnv( ip, ips, numberOfCpus):
         createFromTemplate('humio-config.env', mapping, filename)
     return;
 
+def createNginxConfig(ips, numberOfCpus):
+    servers = ['server ' + ip + ':' + str(8080 + port) + ';'  for ip in ips for port in range(0, numberOfCpus)]
+    mapping = {'<ip-addresses>':('\n'.join(servers))}
+    createFromTemplate('nginx.conf', mapping)
+    return;
+
+
 createZookeeperProperties(ip, ips)
 createZookeeperMyID(ip, ips)
 createKafkaProperties(ip, ips)
 createHumioConfigEnv(ip, ips, cpus)
+createNginxConfig(ips, cpus)
