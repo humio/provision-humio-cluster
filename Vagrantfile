@@ -4,8 +4,8 @@
 Vagrant.configure("2") do |config|
   (1..3).each do |i|
     config.vm.define "humio#{i}" do |humio|
-      humio.vm.box = "debian/jessie64"
-
+      #humio.vm.box = "debian/jessie64"
+      humio.vm.box = "ubuntu/xenial64"
       humio.vm.network "private_network", ip: "10.0.0.#{i+1}"
 
       humio.vm.synced_folder ".", "/vagrant", type: "nfs"
@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
         vb.gui = false
 
         # Customize the amount of memory on the VM:
-        vb.memory = "2048"
+        vb.memory = "3048"
       end
 
 
@@ -36,7 +36,7 @@ Vagrant.configure("2") do |config|
     #Add public key to support standard ssh with your user
     ssh_pub_key = File.readlines("#{Dir.home}/.ssh/id_rsa.pub").first.strip
     s.inline = <<-SHELL
-      echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
+      echo #{ssh_pub_key} >> /home/ubuntu/.ssh/authorized_keys
       apt-get install -y rsync
     SHELL
   end
