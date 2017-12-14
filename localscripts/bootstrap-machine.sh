@@ -7,9 +7,6 @@ cd $DIR
 
 source config.conf
 : "${USER:?Specify the USER running humio in config.conf}"
-if [ -z "${CPUS}" ]; then
-    CPUS=1
-fi
 
 if [ -f "bootstrap-machine-specific.sh" ]; then
   ./bootstrap-machine-specific.sh
@@ -45,11 +42,11 @@ if [ ! -d "/home/$USER" ]; then
 fi
 
 # install docker
-if [ ! -f "/usr/bin/docker" ]; then
-    curl -fsSL https://get.docker.com/ | sh  ##this could be dangerous
-    # add humio user to docker group
-    usermod -aG docker $USER
-    service docker restart
+if ! [ -x "$(command -v docker)" ]; then
+  curl -fsSL https://get.docker.com/ | sh  ##this could be dangerous
+  # add humio user to docker group
+  usermod -aG docker $USER
+  service docker restart
 fi
 
 # create humio directories
@@ -57,7 +54,7 @@ mkdir -p /data/logs/kafka
 mkdir -p /data/zookeeper-data
 mkdir -p /data/kafka-data
 
-
+CPUS=`lscpu | grep 'NUMA node(s):' | cut -d':' -f2 | tr -d '[:space:]'`
 index=1
 while [ $index -le $CPUS ]
 do

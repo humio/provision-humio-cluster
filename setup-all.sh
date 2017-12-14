@@ -5,10 +5,15 @@ set -x
 DIR=`dirname $0`
 cd $DIR
 
+source config.conf
+
 ./provision.sh
 ./setup-cluster-member.sh
 ./update.sh
-./nginx-start.sh
 
-sleep 10
+if [ "$NGINX" = "true" ]; then
+    ./nginx-start.sh
+fi
+
+sleep 20
 ./configure-running-humio.sh

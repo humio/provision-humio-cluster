@@ -10,16 +10,16 @@ configs = dict(line.strip().split('=') for line in lines)
 ipStrings = configs["IPS"].split(',')
 ips = map(lambda str: str.strip(), ipStrings)
 
-cpus = int(configs.get("CPUS", "1"))
 
 args = sys.argv
-if len(args) != 2:
-    raise Exception('script requires the ip-address of the host as parameter')
+if len(args) != 3:
+    raise Exception('script requires the ip-address of the host as first parameter and the number of CPUs as the second parameter')
 
 ip = args[1]
 if ip not in ips:
     raise Exception('supplied parameter ' + ip + ' was not an ip in the supplied config file. ' + str(ips))
 
+cpus = int(args[2])
 
 def createFromTemplate( template, dictionary, filename=None):
     if filename is None:

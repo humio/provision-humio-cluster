@@ -8,16 +8,15 @@ cd $DIR
 source config.conf
 : "${USER:?Specify the USER running humio in config.conf}"
 
-if [[ -z "${CPUS}" ]]; then
-  CPUS=1
-fi
-
 if [ ! -d "/home/$USER/.docker" ]; then
       docker login
 fi
 
 echo "running shell as `whoami`"
 echo "starting docker containers with user $USER"
+
+CPUS=`lscpu | grep 'NUMA node(s):' | cut -d':' -f2 | tr -d '[:space:]'`
+echo "Running $CPUS humio instances"
 
 docker pull humio/humio-kafka
 docker stop humio-kafka --time 30 || true
@@ -34,17 +33,16 @@ docker run -d --user `id -u $USER`  --restart always --net=host \
   --name humio-kafka "humio/humio-kafka"
 
 
-docker pull humio/humio-core
+HUMIO_IMAGE=humio/humio-core
+docker pull $HUMIO_IMAGE
 
 index=1
 while [ $index -le $CPUS ]
 do
-  cores=`cat /proc/cpuinfo|egrep "processor" | cut -d':' -f 2 | cut -d ' ' -f 2 | wc -l`
-  cpuset=`python divide-cpus.py $CPUS $cores $index`
-  cpusetStr="--cpuset-cpus=$cpuset"
-
+  zeroBasedIndex=$((index-1))
+  cpuSet=`lscpu | grep "NUMA node${zeroBasedIndex}" | cut -d':' -f2 | tr -d '[:space:]'`
+  cpusetStr="--cpuset-cpus=$cpuSet"
   containerName="humio-core${index}"
-
   docker stop $containerName --time 30 || true
   docker rm $containerName || true
 
@@ -52,7 +50,7 @@ do
     $cpusetStr \
     -v "/data/logs/humio${index}":/data/logs \
     -v "/data/humio-data${index}":/data/humio-data \
-    --env-file "/home/${USER}/humio-config${index}.env" --name "$containerName" humio/humio-core
+    --env-file "/home/${USER}/humio-config${index}.env" --name "$containerName" $HUMIO_IMAGE
 
   ((index++))
 done
