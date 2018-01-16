@@ -1,3 +1,4 @@
 .vagrant
 output
 localscripts/bootstrap-machine-specific.sh
+*.iml
