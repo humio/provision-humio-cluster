@@ -25,6 +25,7 @@ docker ps
 docker rm humio-kafka  -f || true
 
 docker run -d --user `id -u $USER`  --restart always --net=host \
+  --ulimit nofile=250000:250000 \
   -v /home/$USER/zookeeper.properties:/etc/kafka/zookeeper.properties \
   -v /home/$USER/kafka.properties:/etc/kafka/kafka.properties \
   -v /data/logs:/data/logs \
@@ -47,6 +48,7 @@ do
   docker rm $containerName || true
 
   docker run -d --user `id -u $USER` --restart always --net=host \
+    --ulimit nofile=250000:250000 \
     $cpusetStr \
     -v "/data/logs/humio${index}":/data/logs \
     -v "/data/humio-data${index}":/data/humio-data \
