@@ -41,3 +41,6 @@ done
 chown -R $USER /data/*
 
 apt-get clean
+apt-get update
+apt-get install -y python jq
+
