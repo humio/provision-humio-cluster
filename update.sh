@@ -15,3 +15,5 @@ do
   ssh -t "${ssh_connects[index]}" "sudo su -c ./setup-humio/update.sh $USER"
   ((index++))
 done
+
+echo update succeeded

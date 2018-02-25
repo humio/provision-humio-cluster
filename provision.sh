@@ -13,3 +13,5 @@ do
   ssh "${ssh_connects[index]}" 'sudo setup-humio/bootstrap-machine.sh'
   ((index++))
 done
+
+echo "provisioning succeeded"

@@ -13,3 +13,5 @@ do
   ssh "${ssh_connects[index]}" "setup-humio/setup-cluster-member.sh ${ips[index]}"
   ((index++))
 done
+
+echo setup cluster-member succeeded
