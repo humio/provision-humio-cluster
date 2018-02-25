@@ -12,6 +12,10 @@ if [ -f "bootstrap-machine-specific.sh" ]; then
   ./bootstrap-machine-specific.sh
 fi
 
+apt-get update
+apt-get install -y python jq curl
+apt-get clean
+
 if [ ! -d "/home/$USER" ]; then
     adduser --home "/home/$USER" --gecos "$USER" --disabled-password --disabled-login --shell /bin/bash "$USER"
 fi
@@ -39,8 +43,3 @@ do
 done
 
 chown -R $USER /data/*
-
-apt-get clean
-apt-get update
-apt-get install -y python jq
-
