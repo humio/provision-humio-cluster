@@ -1,13 +1,13 @@
 # Scripts for setting up Humio
 
-This repository contains scripts to setup 1 machine or a cluster of Humio machines.
+This repository contains scripts to setup 1 or a cluster of Humio machines.
 
-The scripts are written in Bash with a little bit of Python.  
-Scripts are run from the local machine, but they will copy files to the target machines. Login using SSH and run local scripts.  
-Before running the scripts, setup the machines with SSH public-key authentication, to avoid having to provide your password many times.
+The project consists of bash scripts with a little bit of Python.  
+Scripts are run from the local machine, but they will copy files to the target machine, login using SSH and run scripts on the target machines.
+Before running the scripts, setup the machines with SSH public-key authentication, to avoid having to put in your password many times. Also make sure the target machines are already in the known_hosts file, before running the scripts.
 
-The recommended operating system for Humio is Ubuntu 16.04 which these scripts target.  
-A few `apt` installs are used, but we try to keep the scripts compatible with Linux in general.
+The recommended operating system for Humio is Ubuntu 16.04. which these scripts also target.
+Although a few `apt` installs are used, we try to keep the scripts compatible with Linux in general as much as possible.
 
 These scripts will do the following on the target machines (running as root):
 
@@ -17,17 +17,18 @@ These scripts will do the following on the target machines (running as root):
 * Setup configuration files in the Humio users home dir
 * Download and run Docker containers.
 
-We encourage inspecting the scripts. Especially look at the `bootstrap-machine.sh` script that will provision the machine and install software.
+We encourage reading through the scripts to see what they do. Especially look at the `bootstrap-machine.sh` script that will provision the machine and install software.
 
 
-It is important to note that **no security is setup**. Humio is run without authentication on port 8080. Kafka and Zookeeper are also running and listening on the configured ports.
-Do not expose the machine on public networks until security is in place. Please contact us at Humio and we will be happy to help.
+It is important to note that *no security is setup*. Humio is run without authentication on port 8080. Kafka and Zookeeper are also running and listening on the configured ports.
+Do not expose the machine on public networks until security is setup. Please contact us at Humio and we will be happy to help.
 
-Humio is running as Docker containers, so no more software needs to be installed on the host machine.
-A Humio installation consists of 2 containers:
+Humio is running in Docker containers, so no more software needs to be installed on the host machine.
+A Humio installation consists of 3 containers:
 
-  * Humio
-  * Kafka/Zookeper
+  * Humio `humio/humio-core`
+  * Kafka `humio/kafka`
+  * Zookeeper `humio/zookeeper`
 
 The Humio container is started in as many instances as the Host machine has CPUs (do not confuse with cores).
 
@@ -60,4 +61,3 @@ Overall the project has 3 scripts:
 * `update.sh` - Will fetch and run the necessary Docker containers. This script can also be used to update Humio to a new version
 
 The script `setup-all.sh` will call all of the above scripts.
-

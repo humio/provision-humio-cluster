@@ -30,6 +30,7 @@ fi
 
 # create humio directories
 mkdir -p /data/logs/kafka
+mkdir -p /data/logs/zk
 mkdir -p /data/zookeeper-data
 mkdir -p /data/kafka-data
 

@@ -18,20 +18,32 @@ echo "starting docker containers with user $USER"
 CPUS=`lscpu | grep 'NUMA node(s):' | cut -d':' -f2 | tr -d '[:space:]'`
 echo "Running $CPUS humio instances"
 
-docker pull humio/humio-kafka
-docker stop humio-kafka --time 30 || true
+docker pull humio/zookeeper
+docker stop humio-zookeeper --time 30 || true
 docker ps
-#sleep 10 #otherwise we have experienced the next command fails with driver "aufs" failed to remove root filesystem
-docker rm humio-kafka  -f || true
+#sleep 30 #otherwise we have experienced the next command fails with driver "aufs" failed to remove root filesystem
+docker rm -f humio-zookeeper || true
 
 docker run -d --user `id -u $USER`  --restart always --net=host \
   --ulimit nofile=250000:250000 \
   -v /home/$USER/zookeeper.properties:/etc/kafka/zookeeper.properties \
-  -v /home/$USER/kafka.properties:/etc/kafka/kafka.properties \
-  -v /data/logs:/data/logs \
+  -v /data/logs/zk:/data/logs/kafka \
   -v /data/zookeeper-data:/data/zookeeper-data  \
-  -v /data/kafka-data:/data/kafka-data  \
-  --name humio-kafka "humio/humio-kafka"
+  --name humio-zookeeper "humio/zookeeper"
+
+
+docker pull humio/kafka
+docker stop humio-kafka --time 30 || true
+docker ps
+#sleep 30 #otherwise we have experienced the next command fails with driver "aufs" failed to remove root filesystem
+docker rm -f humio-kafka || true
+
+docker run -d --user `id -u $USER`  --restart always --net=host \
+    --ulimit nofile=250000:250000 \
+    -v /home/$USER/kafka.properties:/etc/kafka/kafka.properties \
+    -v /data/logs/kafka:/data/logs/kafka \
+    -v /data/kafka-data:/data/kafka-data  \
+    --name humio-kafka "humio/kafka"
 
 
 HUMIO_IMAGE=humio/humio-core

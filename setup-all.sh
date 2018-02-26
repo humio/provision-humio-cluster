@@ -7,8 +7,11 @@ cd $DIR
 
 source config.conf
 
+echo provisioning
 ./provision.sh
+echo setting up cluster member
 ./setup-cluster-member.sh
+echo updating Docker containers
 ./update.sh
 
 if [ "$NGINX" = "true" ]; then
