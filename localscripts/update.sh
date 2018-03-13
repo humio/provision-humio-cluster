@@ -8,10 +8,6 @@ cd $DIR
 source config.conf
 : "${USER:?Specify the USER running humio in config.conf}"
 
-if [ ! -d "/home/$USER/.docker" ]; then
-      docker login
-fi
-
 echo "running shell as `whoami`"
 echo "starting docker containers with user $USER"
 
