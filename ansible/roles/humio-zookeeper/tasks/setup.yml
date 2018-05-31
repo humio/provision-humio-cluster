@@ -1,0 +1,24 @@
+
+- name: Pull Humio zookeeper image
+  docker_image:
+    name: humio/zookeeper
+
+- name: Create zookeeper log dir
+  file: path=/data/logs/zookeeper state=directory
+
+- name: Create zookeeper data dir
+  file: path=/data/zookeeper-data state=directory
+
+- name: Create zookeeper-myid
+  template:
+    src: zookeeper-myid
+    dest: /data/zookeeper-data/myid
+  notify:
+  - restart humio-zookeeper
+
+- name: Create zookeeper.properties
+  template:
+    src: zookeeper.properties
+    dest: zookeeper.properties
+  notify:
+    - restart humio-zookeeper

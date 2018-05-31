@@ -1,0 +1,20 @@
+
+- name: restart humio-zookeeper
+  docker_container:
+    name: humio-zookeeper
+    image: humio/zookeeper
+#    user: ubuntu
+    restart_policy: always
+    network_mode: host
+    ulimits: nofile:250000:250000
+    restart: yes
+    state: started
+    volumes:
+      - /home/ubuntu/zookeeper.properties:/etc/kafka/zookeeper.properties
+      - /data/logs:/data/logs/kafka
+      - /data/zookeeper-data:/data/zookeeper-data
+
+- name: stop humio-zookeeper
+  docker_container:
+    name: humio-zookeeper
+    state: stopped

@@ -1,0 +1,8 @@
+
+[humio-zookeeper]
+X.X.X.X zookeeper_id=1
+
+[humio-zookeeper:vars]
+ansible_user=ubuntu
+ansible_become=yes
+

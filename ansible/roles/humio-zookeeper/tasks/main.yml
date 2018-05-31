@@ -1,0 +1,16 @@
+
+- include_tasks: setup.yml
+  when: run_mode is defined and run_mode=="setup"
+
+- include_tasks: status.yml
+  when: run_mode is defined and run_mode=="status"
+
+- include_tasks: restart.yml
+  when: run_mode is defined and run_mode=="restart"
+
+- include_tasks: stop.yml
+  when: run_mode is defined and run_mode=="stop"
+
+- when: run_mode is not defined
+  fail:
+    msg: "Error: No run_mode specified. -e run_mode=<mode>"

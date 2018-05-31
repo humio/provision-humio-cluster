@@ -1,0 +1,4 @@
+---
+- hosts: humio-zookeeper
+  roles:
+     - humio-zookeeper

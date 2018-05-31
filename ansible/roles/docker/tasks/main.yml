@@ -1,0 +1,51 @@
+
+- name: Remove unwanted APT dependencies
+  apt:
+    name: "{{ item }}"
+    state: absent
+    update_cache: yes
+  with_items:
+    - "docker"
+    - "docker-engine"
+    - "docker.io"
+
+- name: Install APT dependencies
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - "curl"
+    - "apt-transport-https"
+    - "ca-certificates"
+    - "software-properties-common"
+    - "python-pip"
+
+- name: Install PIP dependencies
+  pip:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "docker-py"
+
+- name: Install Docker Repo Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    id: "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
+    state: present
+
+- name: Install Docker Repo
+  apt_repository:
+    repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable'
+    state: present
+    update_cache: yes
+
+- name: Install Docker
+  apt:
+    name: docker-ce
+    state: present
+    update_cache: yes
+
+- service:
+    name: docker
+    state: restarted

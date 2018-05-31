@@ -1,0 +1,4 @@
+
+- command: echo "stopping humio-zookeeper"
+  notify:
+  - stop humio-zookeeper

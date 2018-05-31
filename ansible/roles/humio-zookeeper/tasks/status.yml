@@ -1,0 +1,13 @@
+
+- name: zookeeper stats
+  shell: "echo ruok | nc -q 10 {{ ansible_default_ipv4['address'] }} 2181"
+  register: stats
+
+- name: Is status succeeded
+  command: echo success
+  when: stats.stdout == "imok"
+
+- name: Is status failed
+  fail:
+    msg: "Zookeeper status check failed: {{stats.stdout}}"
+  when: stats.stdout != "imok"

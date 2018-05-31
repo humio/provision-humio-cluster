@@ -1,0 +1,4 @@
+
+- command: echo "restarting humio-zookeeper"
+  notify:
+  - restart humio-zookeeper
