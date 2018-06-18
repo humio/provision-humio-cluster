@@ -11,7 +11,7 @@ Although a few `apt` installs are used, we try to keep the scripts compatible wi
 
 These scripts will do the following on the target machines (running as root):
 
-* install Docker Python, jq, and curl
+* install Docker, Python, jq, and curl
 * Create a user running Humio
 * Create a `/data` directory Humio will use
 * Setup configuration files in the Humio users home dir
