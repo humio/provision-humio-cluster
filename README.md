@@ -1,6 +1,6 @@
 # Scripts for setting up Humio
 
-This repository contains scripts to setup 1 or a cluster of Humio machines.
+This repository contains scripts to setup one or a cluster of Humio nodes.
 
 The project consists of bash scripts with a little bit of Python.  
 Scripts are run from the local machine, but they will copy files to the target machine, login using SSH and run scripts on the target machines.
