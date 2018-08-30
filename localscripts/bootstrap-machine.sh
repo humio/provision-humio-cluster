@@ -40,7 +40,7 @@ while [ $index -le $CPUS ]
 do
   mkdir -p "/data/humio-data${index}"
   mkdir -p "/data/logs/humio${index}"
-  ((index++))
+  ((++index))
 done
 
 chown -R $USER /data/*

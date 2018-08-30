@@ -11,7 +11,7 @@ index=0
 while [ $index -lt  ${#ssh_connects[@]} ]
 do
   ssh "${ssh_connects[index]}" 'sudo setup-humio/bootstrap-machine.sh'
-  ((index++))
+  ((++index))
 done
 
 echo "provisioning succeeded"

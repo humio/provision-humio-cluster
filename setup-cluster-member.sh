@@ -11,7 +11,7 @@ index=0
 while [ $index -lt  ${#ssh_connects[@]} ]
 do
   ssh "${ssh_connects[index]}" "setup-humio/setup-cluster-member.sh ${ips[index]}"
-  ((index++))
+  ((++index))
 done
 
 echo setup cluster-member succeeded

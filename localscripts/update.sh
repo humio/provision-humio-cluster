@@ -62,5 +62,5 @@ do
     -v "/data/humio-data${index}":/data/humio-data \
     --env-file "/home/${USER}/humio-config${index}.env" --name "$containerName" $HUMIO_IMAGE
 
-  ((index++))
+  ((++index))
 done

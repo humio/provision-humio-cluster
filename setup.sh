@@ -21,6 +21,6 @@ index=0
 while [ $index -lt  ${#ssh_connects[@]} ]
 do
   SSH_CONNECT="${ssh_connects[index]}" ./scripts/copy.sh &
-  ((index++))
+  ((++index))
 done
 wait

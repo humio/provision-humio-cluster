@@ -13,7 +13,7 @@ index=0
 while [ $index -lt  ${#ssh_connects[@]} ]
 do
   ssh -t "${ssh_connects[index]}" "sudo su -c ./setup-humio/update.sh $USER"
-  ((index++))
+  ((++index))
 done
 
 echo update succeeded
