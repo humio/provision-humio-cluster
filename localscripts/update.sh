@@ -58,6 +58,7 @@ do
   docker run -d --user `id -u $USER` --restart always --net=host \
     --ulimit nofile=250000:250000 \
     $cpusetStr \
+    -v /etc/humio:/etc/humio:ro \
     -v "/data/logs/humio${index}":/data/logs \
     -v "/data/humio-data${index}":/data/humio-data \
     --env-file "/home/${USER}/humio-config${index}.env" --name "$containerName" $HUMIO_IMAGE

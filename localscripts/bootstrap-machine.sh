@@ -29,6 +29,7 @@ if ! [ -x "$(command -v docker)" ]; then
 fi
 
 # create humio directories
+mkdir -p /etc/humio
 mkdir -p /data/logs/kafka
 mkdir -p /data/logs/zk
 mkdir -p /data/zookeeper-data
