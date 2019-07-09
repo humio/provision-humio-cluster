@@ -1,3 +1,9 @@
+# DEPRECATION NOTICE
+
+This repository has been deprecated in favour of our [Ansible-demo](https://github.com/humio/ansible-demo) examples.
+
+---
+
 # Scripts for setting up Humio
 
 This repository contains scripts to setup one or a cluster of Humio nodes.
